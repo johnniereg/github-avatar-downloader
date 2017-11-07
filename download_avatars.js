@@ -25,11 +25,13 @@ function downloadImageByURL(url, filePath) {
 
 }
 
-// getRepoContributors("jquery", "jquery", function(err, result) {
-//   console.log("Errors:", err);
-//   result.forEach(function(item) {
-//     console.log("Result:", item.avatar_url);
-//   });
-// });
+getRepoContributors("jquery", "jquery", function(err, result) {
+  console.log("Errors:", err);
+  result.forEach(function(user) {
+    var avatarURL = user.avatar_url;
+    var username = user.login;
+    var filepath = `./avatars/${username}.jpg`;
+    downloadImageByURL(avatarURL, filepath);
+  });
+});
 
-downloadImageByURL("https://avatars2.githubusercontent.com/u/2741?v=3&s=466", "avatars/kvirani.jpg")
