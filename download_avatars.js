@@ -38,7 +38,11 @@ function downloadImageByURL(url, filePath) {
 
 console.log('Welcome to the GitHub Avatar Downloader!');
 
-getRepoContributors("jquery", "jquery", function(err, result) {
+// Take commandline arguments for owner and repo
+var owner = process.argv[2];
+var repo = process.argv[3];
+
+getRepoContributors(owner, repo, function(err, result) {
   console.log("Errors:", err);
   result.forEach(function(user) {
     var avatarURL = user.avatar_url;
