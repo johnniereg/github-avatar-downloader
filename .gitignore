@@ -1,6 +1,9 @@
 # Github Token
 secrets.js
 
+# DS Store
+.DS_store
+
 # Logs
 logs
 *.log
