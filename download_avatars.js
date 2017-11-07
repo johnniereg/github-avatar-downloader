@@ -13,6 +13,7 @@ function ensureDirectoryExistence(filePath) {
   fs.mkdirSync(dirname);
 }
 
+// Given a repo owner and repo name, return a JSON object.
 function getRepoContributors(repoOwner, repoName, cb) {
   const options = {
     url: `https://api.github.com/repos/${repoOwner}/${repoName}/contributors`,
@@ -28,27 +29,39 @@ function getRepoContributors(repoOwner, repoName, cb) {
   });
 }
 
-// Given URL and filepath, download files.
+// Given an Image URL and filepath, download file to specified path.
 function downloadImageByURL(url, filePath) {
   ensureDirectoryExistence(filePath);
   request.get(url)
-         .pipe(fs.createWriteStream(filePath));
-
+         .on('error', function(err) {
+            throw err;
+         })
+         .pipe(fs.createWriteStream(filePath))
+         .on('finish', function(data){
+            console.log("Image downloading.");
+         });
 }
-
-console.log('Welcome to the GitHub Avatar Downloader!');
 
 // Take commandline arguments for owner and repo
 var owner = process.argv[2];
 var repo = process.argv[3];
 
-getRepoContributors(owner, repo, function(err, result) {
-  console.log("Errors:", err);
-  result.forEach(function(user) {
-    var avatarURL = user.avatar_url;
-    var username = user.login;
-    var filepath = `./avatars/${username}.jpg`;
-    downloadImageByURL(avatarURL, filepath);
+// Our actual program starts here.
+//
+// Check that the user provided owner and repo arguments.
+if (owner == undefined | repo == undefined) {
+  throw "More info required. Example: node download_avatars.js <owner> <repo>";
+} else {
+// Given a GitHub owner and repo, download all contributor images to an avatars folder.
+  console.log('Welcome to the GitHub Avatar Downloader!');
+  getRepoContributors(owner, repo, function(err, result) {
+    result.forEach(function(user) {
+      var avatarURL = user.avatar_url;
+      var username = user.login;
+      var filepath = `./avatars/${username}.jpg`;
+      downloadImageByURL(avatarURL, filepath);
+    });
   });
-});
+}
+
 
