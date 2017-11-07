@@ -1,8 +1,17 @@
 var request = require('request');
 var githubToken = require('./secrets.js');
 var fs = require('fs');
+var path = require('path');
 
-console.log('Welcome to the GitHub Avatar Downloader!');
+// Use to check for folder and make it if necessary.
+function ensureDirectoryExistence(filePath) {
+  var dirname = path.dirname(filePath);
+  if (fs.existsSync(dirname)) {
+    return true;
+  }
+  ensureDirectoryExistence(dirname);
+  fs.mkdirSync(dirname);
+}
 
 function getRepoContributors(repoOwner, repoName, cb) {
   const options = {
@@ -19,11 +28,15 @@ function getRepoContributors(repoOwner, repoName, cb) {
   });
 }
 
+// Given URL and filepath, download files.
 function downloadImageByURL(url, filePath) {
+  ensureDirectoryExistence(filePath);
   request.get(url)
          .pipe(fs.createWriteStream(filePath));
 
 }
+
+console.log('Welcome to the GitHub Avatar Downloader!');
 
 getRepoContributors("jquery", "jquery", function(err, result) {
   console.log("Errors:", err);
