@@ -1,3 +1,5 @@
+.ENV
+
 # Github Token
 secrets.js
 
