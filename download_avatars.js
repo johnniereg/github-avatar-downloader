@@ -50,7 +50,7 @@ var repo = process.argv[3];
 //
 // Check that the user provided owner and repo arguments.
 if (owner == undefined | repo == undefined) {
-  throw "More info required. Example: node download_avatars.js <owner> <repo>";
+  console.log("More info required. Example: node download_avatars.js <owner> <repo>");
 } else {
 // Given a GitHub owner and repo, download all contributor images to an avatars folder.
   console.log('Welcome to the GitHub Avatar Downloader!');
