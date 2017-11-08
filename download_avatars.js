@@ -43,25 +43,20 @@ function downloadImageByURL(url, filePath) {
 }
 
 // Take commandline arguments for owner and repo
+var userInput = process.argv;
 var owner = process.argv[2];
 var repo = process.argv[3];
 
-// Our actual program starts here.
-//
-// Check that the user provided owner and repo arguments.
-if (owner == undefined | repo == undefined) {
-  console.log("More info required. Example: node download_avatars.js <owner> <repo>");
-} else {
-// Given a GitHub owner and repo, download all contributor images to an avatars folder.
-  console.log('Welcome to the GitHub Avatar Downloader!');
-  getRepoContributors(owner, repo, function(err, result) {
-    result.forEach(function(user) {
-      var avatarURL = user.avatar_url;
-      var username = user.login;
-      var filepath = `./avatars/${username}.jpg`;
-      downloadImageByURL(avatarURL, filepath);
-    });
+console.log('Welcome to the GitHub Avatar Downloader!');
+
+getRepoContributors(owner, repo, function(err, result) {
+  if (userInput.length !== 4) {
+    throw error ("Incorrect number of arguments given. Example: node download_avatars.js <owner> <repo>");
+  }
+  result.forEach(function(user) {
+    var avatarURL = user.avatar_url;
+    var username = user.login;
+    var filepath = `./avatars/${username}.jpg`;
+    downloadImageByURL(avatarURL, filepath);
   });
-}
-
-
+});
