@@ -25,6 +25,9 @@ function getRepoContributors(repoOwner, repoName, cb) {
 
   request(options, function(err, res, body) {
     let toObject = JSON.parse(body);
+    if (toObject.message === 'Not Found') {
+      throw error ("Repo or Owner not found.");
+    }
     cb(err, toObject);
   });
 }
@@ -47,12 +50,13 @@ var userInput = process.argv;
 var owner = process.argv[2];
 var repo = process.argv[3];
 
+if (userInput.length !== 4) {
+  throw error ("Incorrect number of arguments given. Example: node download_avatars.js <owner> <repo>");
+}
+
 console.log('Welcome to the GitHub Avatar Downloader!');
 
 getRepoContributors(owner, repo, function(err, result) {
-  if (userInput.length !== 4) {
-    throw error ("Incorrect number of arguments given. Example: node download_avatars.js <owner> <repo>");
-  }
   result.forEach(function(user) {
     var avatarURL = user.avatar_url;
     var username = user.login;
