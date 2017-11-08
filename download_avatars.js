@@ -28,7 +28,6 @@ function getRepoContributors(repoOwner, repoName, cb) {
     if (toObject.message) {
       throw (toObject.message);
     }
-    console.log(toObject);
     cb(err, toObject);
   });
 }
