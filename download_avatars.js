@@ -25,9 +25,10 @@ function getRepoContributors(repoOwner, repoName, cb) {
 
   request(options, function(err, res, body) {
     let toObject = JSON.parse(body);
-    if (toObject.message === 'Not Found') {
-      throw error ("Repo or Owner not found.");
+    if (toObject.message) {
+      throw (toObject.message);
     }
+    console.log(toObject);
     cb(err, toObject);
   });
 }
