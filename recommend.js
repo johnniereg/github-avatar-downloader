@@ -19,15 +19,14 @@ function recommendRepos(repoOwner, repoName) {
     }
   };
 
-  const allStarredRepos = {
-
-  }
+  const allStarredRepos = {};
 
   // Request information from a given repo and return JSON object of contributors
+
   request(options, function(err, res, body) {
     let contributors = JSON.parse(body);
     if (contributors.message) {
-      throw (contributors.message);
+      throw new Error(contributors.message);
     }
 
     // Loop over the contributors to the repo and access their starred repos
@@ -41,6 +40,9 @@ function recommendRepos(repoOwner, repoName) {
       request(options, function(err, res, body) {
         let starredRepos = JSON.parse(body);
 
+        // Loop over each contributors starred repos and add the repos to an object with
+        // each key being the repo full name and the value being number of appearances.
+
         for (let entry in starredRepos) {
           let repoName = starredRepos[entry].full_name;
 
@@ -49,26 +51,19 @@ function recommendRepos(repoOwner, repoName) {
           } else {
             allStarredRepos[repoName] += 1;
           }
-
-        console.log("***Starts here.");
-        console.log(allStarredRepos);
-        console.log("***Ends here.");
         }
-
-
-
       });
-
     }
-    // return contributors;
   });
+
+
 
 
 
 
 }
 
-recommendRepos("lighthouse-labs", "laser_shark");
+recommendRepos("asdfjdsaklfda", "asfdjsafds");
 
 
 // let contributors = getRepoContributors("lighthouse-labs", "laser_shark");
