@@ -10,7 +10,7 @@ var fs = require('fs');
 var path = require('path');
 
 
-function recommendRepos(repoOwner, repoName) {
+function recommendRepos(repoOwner, repoName, cb) {
   const options = {
     url: `https://api.github.com/repos/${repoOwner}/${repoName}/contributors`,
     headers : {
@@ -19,72 +19,80 @@ function recommendRepos(repoOwner, repoName) {
     }
   };
 
-  const allStarredRepos = {};
 
   // Request information from a given repo and return JSON object of contributors
 
   request(options, function(err, res, body) {
+
+    let allStarredRepos = {};
+
     let contributors = JSON.parse(body);
+
     if (contributors.message) {
       throw new Error(contributors.message);
     }
 
-    // Loop over the contributors to the repo and access their starred repos
-    for (let contributor in contributors) {
+    // Counter to make sure we're at the end of our iterations.
 
-      let user = contributors[contributor];
-      let login = user.login;
-      let starredURL = user.starred_url;
-      options.url = `https://api.github.com/users/${login}/starred`;
+    let iterationCounter = 0;
 
-      request(options, function(err, res, body) {
-        let starredRepos = JSON.parse(body);
+    let contributorsNumber = contributors.length;
 
-        // Loop over each contributors starred repos and add the repos to an object with
-        // each key being the repo full name and the value being number of appearances.
+    for (let i = 0; i <= contributors.length; i++) {
 
-        for (let entry in starredRepos) {
-          let repoName = starredRepos[entry].full_name;
+        // Loop over the contributors to the repo and access their starred repos
+        for (let contributor in contributors) {
 
-          if (allStarredRepos[repoName] === undefined) {
-            allStarredRepos[repoName] = 1;
-          } else {
-            allStarredRepos[repoName] += 1;
-          }
+          let user = contributors[contributor];
+          let login = user.login;
+          let starredURL = user.starred_url;
+          options.url = `https://api.github.com/users/${login}/starred`;
+
+          request(options, function(err, res, body) {
+            console.log("In the request");
+            let starredRepos = JSON.parse(body);
+
+            // Loop over each contributors starred repos and add the repos to an object with
+            // each key being the repo full name and the value being number of appearances.
+
+            for (let entry in starredRepos) {
+              let repoName = starredRepos[entry].full_name;
+
+              if (allStarredRepos[repoName] === undefined) {
+                allStarredRepos[repoName] = 1;
+              } else {
+                allStarredRepos[repoName] += 1;
+              }
+            }
+
+            if (i === contributors.length) {
+              console.log("We're calling the callback.");
+              cb(allStarredRepos);
+
+            }
+
+          });
         }
-      });
+
     }
+
+
+
   });
 
-
-
-
-
-
+  // Take the fully filled allStarredRepos object and iterate over it to pull top 5
 }
 
-recommendRepos("asdfjdsaklfda", "asfdjsafds");
+// fucntion dumbTest()
+
+recommendRepos("lighthouse-labs", "jungle-rails", function(result) {
+  // console.log("Test");
+  console.log(result);
+  for (let repo in result) {
+    console.log(repo);
+  }
+});
 
 
-// let contributors = getRepoContributors("lighthouse-labs", "laser_shark");
-
-// function getStarredRepos(contributors) {
-
-//   for (let contributor in contributors) {
-
-//     let username = contributors[contributor].login;
-//     console.log(username);
-
-//     const options = {
-//       url: `https://api.github.com/users/${username}/starred`,
-//       headers : {
-//         'User-Agent': 'request',
-//         'Authorization': 'token ' + process.env.GITHUB_API_TOKEN
-//       }
-//     };
-
-//   }
-
-// }
 
 
