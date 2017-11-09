@@ -9,52 +9,78 @@ var request = require('request');
 var fs = require('fs');
 var path = require('path');
 
+getRepoContributors("lighthouse-labs", "laser_shark");
 
-function recommendSomeRepos(repoOwner, repoName) {
-
-
-
-  function getRepoContributors(repoOwner, repoName) {
-  // Given a repo name and repo owner,
-  // Make an API request
-  // Grab the github username(s) of contributors to given rep
-
-  // Return results as an array
-
-  }
-
-  function getUsersStarredRepos(gitUserName) {
-  // Given a github username
-  // Make an API request
-  // Grab the full names of repos they user has starred
-  //
-  // Return results as an array
-
-  }
-
-  let theStarCounter; // Where we add up each contributors stars
-
-  function addUpStarredRepos(usersStarredRepos) {
-  // Given a users starred repos
-  // Add those repos to a counter for the starting repo
-  // probably needs to be at larger scope
-  //
-  // Once you've added all the usersStarredRepos
-  // Return the fully loaded counter
-
-
-  }
-
-  function getTopFiveStars(starredRepoCounter) {
-  // Given a counter that holds the names of repos
-  // and how many times each of those repos have been starred
-  //
-  // Review the counters and return the top five
-  //
-  //
+function getRepoContributors(repoOwner, repoName) {
+  // Given a repo name and repo owner.
+  // Set repo name and owner into the options for an API request
+  // for info on on the given repo's contributors
+  const options = {
+    url: `https://api.github.com/repos/${repoOwner}/${repoName}/contributors`,
+    headers : {
+      'User-Agent': 'request',
+      'Authorization': 'token ' + process.env.GITHUB_API_TOKEN
+    }
+  };
+  // Make an API request with the established options.
+  request(options, function(err, res, body) {
+    let namesOfContributors = [];
+    // Put the results in the container as a JSON object
+    console.log("Making GitHub API request.");
+    // Create object that holds info on all the repos contributors,
+    // each item is another object holding info about the contributor.
+    let repoContribInfo = JSON.parse(body);
+    // Iterate over each item in the object
+    for (let contribEntry in repoContribInfo) {
+      let theEntry = repoContribInfo[contribEntry];
+      // Put the login into the array of contributor names.
+      namesOfContributors.push(theEntry.login);
+    }
+    // Return results as an array of logins as strings.
+    return namesOfContributors;
+  });
+}
 
 
-  }
+
+function getUsersStarredRepos(gitUserName) {
+// Given a github username
+// Make an API request
+//
+// starred_url -> https://api.github.com/users/${username}/starred
+//
+// Grab the full names of repos they user has starred
+//
+// Return results as an array
+//
+//
+//
+
+}
+
+let theStarCounter; // Where we add up each contributors stars
+
+function addUpStarredRepos(usersStarredRepos) {
+// Given a users starred repos
+// Add those repos to a counter for the starting repo
+// probably needs to be at larger scope
+//
+// Once you've added all the usersStarredRepos
+// Return the fully loaded counter
+
+
+}
+
+function getTopFiveStars(starredRepoCounter) {
+// Given a counter that holds the names of repos
+// and how many times each of those repos have been starred
+//
+// Review the counters and return the top five
+//
+//
+
+
+}
 
 // Print out some recommendations for repos to check out
 //
@@ -69,7 +95,9 @@ function recommendSomeRepos(repoOwner, repoName) {
 //
 //
 
-}
+
+
+
 
 
 
