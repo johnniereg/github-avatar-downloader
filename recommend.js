@@ -9,7 +9,6 @@ var request = require('request');
 var fs = require('fs');
 var path = require('path');
 
-getRepoContributors("lighthouse-labs", "laser_shark");
 
 function getRepoContributors(repoOwner, repoName) {
   // Given a repo name and repo owner.
@@ -22,7 +21,6 @@ function getRepoContributors(repoOwner, repoName) {
       'Authorization': 'token ' + process.env.GITHUB_API_TOKEN
     }
   };
-  // Make an API request with the established options.
   request(options, function(err, res, body) {
     let namesOfContributors = [];
     // Put the results in the container as a JSON object
@@ -42,21 +40,41 @@ function getRepoContributors(repoOwner, repoName) {
 }
 
 
-
 function getUsersStarredRepos(gitUserName) {
 // Given a github username
 // Make an API request
-//
-// starred_url -> https://api.github.com/users/${username}/starred
-//
-// Grab the full names of repos they user has starred
-//
-// Return results as an array
-//
-//
-//
-
+  const options = {
+    url: `https://api.github.com/users/${gitUserName}/starred`,
+    headers : {
+      'User-Agent': 'request',
+      'Authorization': 'token ' + process.env.GITHUB_API_TOKEN
+    }
+  };
+  request(options, function(err, res, body) {
+    let namesOfStarredRepos = [];
+    // Put the results in the container as a JSON object
+    console.log("Making GitHub API request.");
+    // Create object that holds info on all the repos contributors,
+    // each item is another object holding info about the contributor.
+    let repoListing = JSON.parse(body);
+    // console.log(repoListing);
+    // Iterate over each item in the object
+    for (let starredRepo in repoListing) {
+      let theEntry = repoListing[starredRepo];
+      // Put the repo names into the array of all starred repos.
+      namesOfStarredRepos.push(theEntry.full_name);
+    }
+    // Return all of the user's starred repos
+    // as an array of repo names as strings.
+    console.log(namesOfStarredRepos);
+    return namesOfStarredRepos;
+  });
 }
+
+
+
+
+
 
 let theStarCounter; // Where we add up each contributors stars
 
