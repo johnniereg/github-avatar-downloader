@@ -66,28 +66,43 @@ function getUsersStarredRepos(gitUserName) {
     }
     // Return all of the user's starred repos
     // as an array of repo names as strings.
-    console.log(namesOfStarredRepos);
     return namesOfStarredRepos;
   });
 }
 
+function addUpStarredRepos(arrayOfUserNames) {
+// Sets up place to store the rankings
+// Not sure what best form is yet.
 
+  let repoLeaderBoard;
 
+// Take in the array
+// For each username in the array
+  console.log("Starting to loop over array.");
+  arrayOfUserNames.forEach(function(username) {
+    let theUser = username;
+    // getting hung up here because of asynchronous functions
+    let usersRepoList = getUsersStarredRepos(theUser);
+    set console.log(usersRepoList);
 
+  });
+  console.log("Finished looping over array.");
+//
+// Grab that username's starred repos
+// Add thoes repos to the ranking
 
-
-let theStarCounter; // Where we add up each contributors stars
-
-function addUpStarredRepos(usersStarredRepos) {
 // Given a users starred repos
 // Add those repos to a counter for the starting repo
 // probably needs to be at larger scope
 //
 // Once you've added all the usersStarredRepos
+//
+//
 // Return the fully loaded counter
 
-
 }
+
+addUpStarredRepos(["LaithAzer", "kvirani", "Sailias"]);
 
 function getTopFiveStars(starredRepoCounter) {
 // Given a counter that holds the names of repos
