@@ -32,6 +32,8 @@ function recommendSomeRepos(repoOwner, repoName) {
 
   }
 
+  let theStarCounter; // Where we add up each contributors stars
+
   function addUpStarredRepos(usersStarredRepos) {
   // Given a users starred repos
   // Add those repos to a counter for the starting repo
@@ -54,13 +56,22 @@ function recommendSomeRepos(repoOwner, repoName) {
 
   }
 
-
+// Print out some recommendations for repos to check out
+//
+//
+// Look like this:
+//
+// [ 11 stars ] minimaxir / big-list-of-naughty-strings
+// [  5 stars ] braidchat / braid
+// [  3 stars ] husl-colors / husl
+// [  2 stars ] matiassingers / awesome-readme
+// [  1 stars ] ajacksified / song-of-github
+//
+//
 
 }
 
 
-// Add full names of repos to something
-// Use it to track number of stars each repo has
 
 
 
