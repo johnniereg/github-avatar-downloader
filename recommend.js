@@ -9,40 +9,43 @@ var request = require('request');
 var fs = require('fs');
 var path = require('path');
 
-
-function getRepoContributors(repoOwner, repoName, callback) {
-  // Given a repo name and repo owner.
-  // Set repo name and owner into the options for an API request
-  // for info on on the given repo's contributors
-  const options = {
-    url: `https://api.github.com/repos/${repoOwner}/${repoName}/contributors`,
-    headers : {
-      'User-Agent': 'request',
-      'Authorization': 'token ' + process.env.GITHUB_API_TOKEN
+// Given an array containing repo names, add up how many times each appears
+// and then print out the five repos with the most appearances (or stars).
+function printTopFive(starredrepos) {
+  // Where we will store the repos to be sorted.
+  let collectedRepos = {};
+  // Loop over inputted repos, create an object where keys are repo names
+  // and values are the number of times the repo has been starred.
+  starredrepos.forEach(function(repo) {
+    if (collectedRepos[repo] === undefined) {
+      collectedRepos[repo] = 1;
+    } else {
+      collectedRepos[repo] += 1;
     }
-  };
-  request(options, function(err, res, body) {
-    let namesOfContributors = [];
-    // Put the results in the container as a JSON object
-    //
-    // Create object that holds info on all the repos contributors,
-    // each item is another object holding info about the contributor.
-    let repoContribInfo = JSON.parse(body);
-    // Iterate over each item in the object
-    for (let contribEntry in repoContribInfo) {
-      let theEntry = repoContribInfo[contribEntry];
-      // Put the login into the array of contributor names.
-      namesOfContributors.push(theEntry.login);
-    }
-    // Return results as an array of logins as strings.
-    callback(namesOfContributors);
   });
+  // Convert our object into an array where each entry is another array
+  // containing a repo name and their number of stars.
+  let collectedReposArr = Object.keys(collectedRepos).map(function(key) {
+    return [key, collectedRepos[key]];
+  });
+
+  // Sort the array by number of stars to bring the highest ranked
+  // repos to the front of the array.
+  collectedReposArr.sort(function(a, b) {
+    return b[1] - a[1]
+  });
+
+  // Loop over the sorted array and print off the top five.
+  for (let i = 0; i < 5; i++) {
+    let stars = collectedReposArr[i][1];
+    console.log(`[${stars} stars] ${collectedReposArr[i][0]}`);
+  }
 }
 
-
-
-
-function getStarredRepos(users, callback) {
+// Given an array of github usernames, collect the names
+// of all repos that those users have starred and pass them
+// to the printTopFive function.
+function getStarredRepos(users) {
 
   let loopEndPoint = users.length;
   let loopCounter = 0;
@@ -76,43 +79,49 @@ function getStarredRepos(users, callback) {
       // as an array of repo names as strings.
 
       if (loopCounter >= loopEndPoint) {
-        makeLeaderBoard(namesOfStarredRepos);
+        printTopFive(namesOfStarredRepos);
       }
     });
   });
 }
 
-getRepoContributors("lighthouse-labs", "laser_shark", getStarredRepos);
-
-
-
-function makeLeaderBoard(starredrepos) {
-
-  let collectedRepos = {};
-  starredrepos.forEach(function(repo) {
-    if (collectedRepos[repo] === undefined) {
-      collectedRepos[repo] = 1;
-    } else {
-      collectedRepos[repo] += 1;
+// Takes in a repo owner and repo name. Finds the usernames of
+// all the contributors and passes those names as an array to
+// the getStarredRepos function.
+function recommendRepos(repoOwner, repoName) {
+  // Given a repo name and repo owner.
+  // Set repo name and owner into the options for an API request
+  // for info on on the given repo's contributors
+  const options = {
+    url: `https://api.github.com/repos/${repoOwner}/${repoName}/contributors`,
+    headers : {
+      'User-Agent': 'request',
+      'Authorization': 'token ' + process.env.GITHUB_API_TOKEN
     }
+  };
+  request(options, function(err, res, body) {
+    let namesOfContributors = [];
+    // Put the results in the container as a JSON object
+    //
+    // Create object that holds info on all the repos contributors,
+    // each item is another object holding info about the contributor.
+    let repoContribInfo = JSON.parse(body);
+    // Iterate over each item in the object
+    for (let contribEntry in repoContribInfo) {
+      let theEntry = repoContribInfo[contribEntry];
+      // Put the login into the array of contributor names.
+      namesOfContributors.push(theEntry.login);
+    }
+    // Return results as an array of logins as strings.
+    getStarredRepos(namesOfContributors);
   });
-
-  let collectedReposArr = Object.keys(collectedRepos).map(function(key) {
-    return [key, collectedRepos[key]];
-  });
-
-  collectedReposArr.sort(function(a, b) {
-    return b[1] - a[1]
-  });
-
-  for (let i = 0; i < 5; i++) {
-    let stars = collectedReposArr[i][1];
-    console.log(`[${stars} stars] ${collectedReposArr[i][0]}`);
-  }
-
 }
 
+let repoOwner = process.argv[2];
+let repoName = process.argv[3];
 
+
+recommendRepos(repoOwner, repoName);
 
 
 
