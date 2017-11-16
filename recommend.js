@@ -117,6 +117,7 @@ function recommendRepos(repoOwner, repoName) {
   });
 }
 
+// Takes user input from command line to allow program to run.
 let repoOwner = process.argv[2];
 let repoName = process.argv[3];
 
